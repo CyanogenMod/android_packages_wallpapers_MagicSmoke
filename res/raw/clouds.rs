@@ -45,13 +45,13 @@ void drawCloud(float *ident, int id, int idx) {
 
     bindTexture(NAMED_PFBackground, 0, id);
     drawQuadTexCoords(
-            -600.0f, -600.0f, z,        // space
+            -1200.0f, -1200.0f, z,        // space
                 0.f + xshift[idx], 0.f,        // texture
-            600, -600.0f, z,            // space
+            1200, -1200.0f, z,            // space
                 scale[idx] + xshift[idx], 0.f,         // texture
-            600, 600.0f, z,            // space
+            1200, 1200.0f, z,            // space
                 scale[idx] + xshift[idx], scale[idx],         // texture
-            -600.0f, 600.0f, z,        // space
+            -1200.0f, 1200.0f, z,        // space
                 0.f + xshift[idx], scale[idx]);       // texture
 }
 
@@ -119,7 +119,7 @@ void makeTexture(int *src, int *dst, int rsid) {
     int y;
     int pm = State->mPreMul;
 
-    if (State->mProcessTexture) {
+    if (State->mProcessTextureMode == 1) {
         int lowcol = State->mLowCol;
         int highcol = State->mHighCol;
         
@@ -147,7 +147,63 @@ void makeTexture(int *src, int *dst, int rsid) {
             }
         }
         alphafactor *= State->mAlphaMul;
+    } else if (State->mProcessTextureMode == 2) {
+        int lowcol = State->mLowCol;
+        int highcol = State->mHighCol;
+        float scale = 255.f / (255.f - lowcol);
+        
+        for (y=0;y<256;y++) {
+            for (x=0;x<256;x++) { 
+                int pix = src[y*256+x];
+                int alpha = pix & 0x00ff;
+                if (alpha < lowcol) {
+                    alpha = 0;
+                } else {
+                    alpha = (alpha - lowcol) * scale;
+                }
+                alpha /= alphafactor;
+                int newpix = highcol;
+                if (pm) newpix = premul(newpix, alpha);
+                newpix = newpix | (alpha << 24);
+                // have ARGB, need ABGR
+                newpix = (newpix & 0xff00ff00) | ((newpix & 0xff) << 16) | ((newpix >> 16) & 0xff);
+                dst[y*256+x] = newpix;
+            }
+        }
+        alphafactor *= State->mAlphaMul;
+    } else if (State->mProcessTextureMode == 3) {
+        int lowcol = State->mLowCol;
+        int highcol = State->mHighCol;
+        float scale = 255.f / (255.f - lowcol);
+        
+        for (y=0;y<256;y++) {
+            for (x=0;x<256;x++) { 
+                int pix = src[y*256+x];
+                int lum = pix & 0x00ff;
+                int newpix;
+                if (lum < 128) lum *= 2;
+                else lum = (255 - (lum - 128) * 2);
+                if (lum < 128) {
+                    newpix = lowcol;
+                    int newalpha = 255 - (lum * 2);
+                    newalpha /= alphafactor;
+                    if (pm) newpix = premul(newpix, newalpha);
+                    newpix = newpix | (newalpha << 24);
+                } else {
+                    newpix = highcol;
+                    int newalpha = (lum - 128) * 2;
+                    newalpha /= alphafactor;
+                    if (pm) newpix = premul(newpix, newalpha);
+                    newpix = newpix | (newalpha << 24);
+                }
+                // have ARGB, need ABGR
+                newpix = (newpix & 0xff00ff00) | ((newpix & 0xff) << 16) | ((newpix >> 16) & 0xff);
+                dst[y*256+x] = newpix;
+            }
+        }
+        alphafactor *= State->mAlphaMul;
     } else {
+
         for (y=0;y<256;y++) {
             for (x=0;x<256;x++) {
                 int rgb = *src++;
@@ -187,11 +243,11 @@ void init() {
         xshift[i] = 0.f;
         rotation[i] = 360.f * i / 5.f;
     }
-    scale[0] = 2.f; // changed below based on preset
-    scale[1] = 1.5f;
-    scale[2] = 1.7f;
-    scale[3] = 1.9f;
-    scale[4] = 2.1f;
+    scale[0] = 4.0f; // changed below based on preset
+    scale[1] = 3.0f;
+    scale[2] = 3.4f;
+    scale[3] = 3.8f;
+    scale[4] = 4.2f;
 
     currentpreset = -1;
 }
@@ -226,9 +282,9 @@ int main(int launchID) {
     }
 
     if (State->mTextureSwap != 0) {
-        scale[0] = .125f;
+        scale[0] = .25f;
     } else {
-        scale[0] = 2.f;
+        scale[0] = 4.f;
     }
     drawClouds(ident);
 

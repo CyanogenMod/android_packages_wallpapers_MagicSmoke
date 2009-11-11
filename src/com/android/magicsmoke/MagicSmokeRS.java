@@ -58,7 +58,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         public int   mTextureMask;
         public int   mRotate;
         public int   mTextureSwap;
-        public int   mProcessTexture;
+        public int   mProcessTextureMode;
         public int   mBackCol;
         public int   mLowCol;
         public int   mHighCol;
@@ -97,9 +97,9 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     private SharedPreferences mSharedPref;
     
     static class Preset {
-        Preset(boolean process, int backcol, int locol, int hicol, float mul, int mask,
+        Preset(int processmode, int backcol, int locol, int hicol, float mul, int mask,
                  boolean rot, int blend, boolean texswap, boolean premul) {
-            mProcessTexture = process;
+            mProcessTextureMode = processmode;
             mBackColor = backcol;
             mLowColor = locol;
             mHighColor = hicol;
@@ -110,7 +110,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
             mTextureSwap = texswap;
             mPreMul = premul;
         }
-        public boolean mProcessTexture;
+        public int mProcessTextureMode;
         public int mBackColor;
         public int mLowColor;
         public int mHighColor;
@@ -124,24 +124,27 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     public static final int DEFAULT_PRESET = 4;
     public static final Preset [] mPreset = new Preset[] {
-        //         proc    back     low       high      alph  mask  rot  blend  swap premul
-        new Preset(true,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(true,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(true,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(true,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(true,  0x00ff00, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
-        new Preset(true,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
-        new Preset(false, 0x000000, 0x000000, 0xffffff, 0.0f, 0x1f, true,  0, false, false),
-        new Preset(true,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true,  false),
-        new Preset(true,  0x008000, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
-        new Preset(true,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
-        new Preset(true,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(true,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(true,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, false, 0, false, true),
-        new Preset(true,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true, true),
-        new Preset(true,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, true,  0, true, true),
-        new Preset(true,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(true,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
+        //       proc    back     low       high     alph  mask  rot  blend  swap premul
+        new Preset(1,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
+        new Preset(1,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
+        new Preset(1,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
+        new Preset(1,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
+        new Preset(1,  0x00ff00, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
+        new Preset(1,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
+        new Preset(0,  0x000000, 0x000000, 0xffffff, 0.0f, 0x1f, true,  0, false, false),
+        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true,  false),
+        new Preset(1,  0x008000, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
+        new Preset(1,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
+        new Preset(1,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
+        new Preset(1,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
+        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, false, 0, false, true),
+        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true, true),
+        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, true,  0, true, true),
+        new Preset(1,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
+        new Preset(1,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
+        new Preset(2,  0x000000, 0x000070, 0xff2020, 2.5f, 0x1f, true,  0, false, false),
+        new Preset(2,  0x6060ff, 0x000070, 0xffffff, 2.5f, 0x1f, true,  0, false, false),
+        new Preset(3,  0x0000f0, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
     };
     
     private float mTouchY;
@@ -171,7 +174,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mWorldState.mTextureMask = mPreset[p].mTextureMask;
         mWorldState.mRotate = mPreset[p].mRotate ? 1 : 0;
         mWorldState.mTextureSwap = mPreset[p].mTextureSwap ? 1 : 0;
-        mWorldState.mProcessTexture = mPreset[p].mProcessTexture ? 1 : 0;
+        mWorldState.mProcessTextureMode = mPreset[p].mProcessTextureMode;
         mWorldState.mBackCol = mPreset[p].mBackColor;
         mWorldState.mLowCol = mPreset[p].mLowColor;
         mWorldState.mHighCol = mPreset[p].mHighColor;
