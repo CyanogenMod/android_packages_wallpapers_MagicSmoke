@@ -94,12 +94,25 @@ void drawClouds(float* ident) {
         xshift[4] += 0.00127f;
     }
 
+    // Make sure the texture coordinates don't continuously increase
+    for(i = 0; i < 5; i++) {
+        while (xshift[i] >= 1.f) {
+            xshift[i] -= 1.f;
+        }
+    }
     if (State->mRotate != 0) {
         rotation[0] += 0.10;
         rotation[1] += 0.102f;
         rotation[2] += 0.106f;
         rotation[3] += 0.114f;
         rotation[4] += 0.123f;
+    }
+
+    // Make sure the rotation angles don't continuously increase
+    for(i = 0; i < 5; i++) {
+        while (rotation[i] >= 360.f) {
+            rotation[i] -= 360.f;
+        }
     }
 }
 
