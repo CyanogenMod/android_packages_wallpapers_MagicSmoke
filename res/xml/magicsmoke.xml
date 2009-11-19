@@ -21,8 +21,8 @@
 <!-- for the cube. -->
 
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:wallpaperAuthor="@string/author"
-    android:wallpaperDescription="@string/magicsmoke_desc"
+    android:author="@string/author"
+    android:description="@string/magicsmoke_desc"
     android:thumbnail="@drawable/magicsmoke_thumb"
     android:settingsActivity="com.android.magicsmoke.MagicSmokeSelector"
 />
