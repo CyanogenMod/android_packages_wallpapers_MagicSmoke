@@ -33,7 +33,8 @@ float rotation[5];
 float scale[5];
 float alphafactor;
 int currentpreset;
-
+int lastuptime;
+float timedelta;
 
 void drawCloud(float *ident, int id, int idx) {
     float mat1[16];
@@ -63,35 +64,42 @@ void drawClouds(float* ident) {
 
     matrixLoadMat(mat1,ident);
 
+    if (State->mRotate != 0) {
+        rotation[0] += 0.10 * timedelta;
+        rotation[1] += 0.102f * timedelta;
+        rotation[2] += 0.106f * timedelta;
+        rotation[3] += 0.114f * timedelta;
+        rotation[4] += 0.123f * timedelta;
+    }
 
     int mask = State->mTextureMask;
     if (mask & 1) {
+        xshift[0] += 0.0010f * timedelta;
         if (State->mTextureSwap != 0) {
             drawCloud(mat1, NAMED_Tnoise5, 0);
         } else {
             drawCloud(mat1, NAMED_Tnoise1, 0);
         }
-        xshift[0] += 0.0010f;
     }
 
     if (mask & 2) {
+        xshift[1] += 0.00106 * timedelta;
         drawCloud(mat1, NAMED_Tnoise2, 1);
-        xshift[1] += 0.00106;
     }
 
     if (mask & 4) {
+        xshift[2] += 0.00114f * timedelta;
         drawCloud(mat1, NAMED_Tnoise3, 2);
-        xshift[2] += 0.00114f;
     }
 
     if (mask & 8) {
+        xshift[3] += 0.00118f * timedelta;
         drawCloud(mat1, NAMED_Tnoise4, 3);
-        xshift[3] += 0.00118f;
     }
 
     if (mask & 16) {
+        xshift[4] += 0.00127f * timedelta;
         drawCloud(mat1, NAMED_Tnoise5, 4);
-        xshift[4] += 0.00127f;
     }
 
     // Make sure the texture coordinates don't continuously increase
@@ -100,14 +108,6 @@ void drawClouds(float* ident) {
             xshift[i] -= 1.f;
         }
     }
-    if (State->mRotate != 0) {
-        rotation[0] += 0.10;
-        rotation[1] += 0.102f;
-        rotation[2] += 0.106f;
-        rotation[3] += 0.114f;
-        rotation[4] += 0.123f;
-    }
-
     // Make sure the rotation angles don't continuously increase
     for(i = 0; i < 5; i++) {
         while (rotation[i] >= 360.f) {
@@ -263,6 +263,8 @@ void init() {
     scale[4] = 4.2f;
 
     currentpreset = -1;
+    lastuptime = uptimeMillis();
+    timedelta = 0;
 }
 
 
@@ -282,6 +284,15 @@ int main(int launchID) {
     } else {
         bindProgramStore(NAMED_PFSBackgroundSrc);
     }
+
+    int now = uptimeMillis();
+    timedelta = ((float)(now - lastuptime)) / 44.f;
+    lastuptime = now;
+    if (timedelta > 100) {
+        // If we didn't render anything for several seconds, just pretend time stopped.
+        timedelta = 1;
+    }
+
     i = State->mPreset;
     if (i != currentpreset) {
         currentpreset = i;
