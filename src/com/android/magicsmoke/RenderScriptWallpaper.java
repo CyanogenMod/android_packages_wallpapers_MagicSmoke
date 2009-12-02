@@ -106,6 +106,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
                 surface = holder.getSurface();
             }
             mRs = new RenderScript(false, false);
+            mRs.contextSetPriority(RenderScript.Priority.LOW);
         }
 
         @Override
