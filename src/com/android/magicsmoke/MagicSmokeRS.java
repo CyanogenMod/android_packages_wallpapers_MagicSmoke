@@ -16,7 +16,6 @@
 
 package com.android.magicsmoke;
 
-import static android.renderscript.ProgramFragment.EnvMode.REPLACE;
 import static android.renderscript.Sampler.Value.LINEAR;
 import static android.renderscript.Sampler.Value.WRAP;
 
@@ -76,7 +75,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     private Sampler mSampler;
     private Allocation[] mSourceTextures;
     private Allocation[] mRealTextures;
-    
+
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
@@ -95,7 +94,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     private Context mContext;
     private SharedPreferences mSharedPref;
-    
+
     static class Preset {
         Preset(int processmode, int backcol, int locol, int hicol, float mul, int mask,
                  boolean rot, int blend, boolean texswap, boolean premul) {
@@ -146,9 +145,9 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         new Preset(2,  0x6060ff, 0x000070, 0xffffff, 2.5f, 0x1f, true,  0, false, false),
         new Preset(3,  0x0000f0, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
     };
-    
+
     private float mTouchY;
-    
+
     MagicSmokeRS(Context context, int width, int height) {
         super(width, height);
         mWidth = width;
@@ -182,7 +181,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mWorldState.mPreMul = mPreset[p].mPreMul ? 1 : 0;
         mWorldState.mBlendFunc = mPreset[p].mBlendFunc;
     }
-    
+
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
@@ -211,7 +210,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
                 mState.data(mWorldState);
         }
     }
-    
+
     @Override
     public void setOffset(float xOffset, float yOffset, float xStep, float yStep,
             int xPixels, int yPixels) {
@@ -233,10 +232,10 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         makeNewState();
         mState.data(mWorldState);
     }
-    
+
     float alphafactor;
     Type mTextureType;
-    
+
     void loadBitmap(int id, int index, String name, float alphamul, int lowcol, int highcol) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -259,7 +258,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         int highcol = mPreset[mWorldState.mPreset].mHighColor;
         //Log.i("@@@@", "preset " + mWorldState.mPreset + ", mul: " + alphamul +
         //        ", colors: " + Integer.toHexString(lowcol) + "/" + Integer.toHexString(highcol));
-        
+
         // TODO: using different high and low colors for each layer offers some cool effects too
         loadBitmap(R.drawable.noise1, 0, "Tnoise1", alphamul, lowcol, highcol);
         loadBitmap(R.drawable.noise2, 1, "Tnoise2", alphamul, lowcol, highcol);
@@ -267,7 +266,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         loadBitmap(R.drawable.noise4, 3, "Tnoise4", alphamul, lowcol, highcol);
         loadBitmap(R.drawable.noise5, 4, "Tnoise5", alphamul, lowcol, highcol);
     }
-    
+
     @Override
     protected ScriptC createScript() {
 
@@ -289,13 +288,13 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
         mSourceTextures = new Allocation[5];
         mRealTextures = new Allocation[5];
-        
+
         Type.Builder tb = new Type.Builder(mRS, Element.RGBA_8888(mRS));
         tb.add(Dimension.X, 256);
         tb.add(Dimension.Y, 256);
         mTextureType = tb.create();
         loadBitmaps();
-        
+
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
         samplerBuilder.setMin(LINEAR);
         samplerBuilder.setMag(LINEAR);
@@ -304,9 +303,9 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mSampler = samplerBuilder.create();
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS, null, null);
-            builder.setTexEnable(true, 0);
-            builder.setTexEnvMode(ProgramFragment.EnvMode.MODULATE, 0);
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
+            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
+                               ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackground = builder.create();
             mPfBackground.setName("PFBackground");
             mPfBackground.bindSampler(mSampler, 0);
