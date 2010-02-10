@@ -18,7 +18,7 @@
 package com.android.magicsmoke;
 
 import android.content.res.Resources;
-import android.renderscript.RenderScript;
+import android.renderscript.RenderScriptGL;
 import android.renderscript.ScriptC;
 import android.view.MotionEvent;
 
@@ -27,7 +27,7 @@ public abstract class RenderScriptScene {
     protected int mHeight;
     protected boolean mPreview;
     protected Resources mResources;
-    protected RenderScript mRS;
+    protected RenderScriptGL mRS;
     protected ScriptC mScript;
 
     public RenderScriptScene(int width, int height) {
@@ -35,7 +35,7 @@ public abstract class RenderScriptScene {
         mHeight = height;
     }
 
-    public void init(RenderScript rs, Resources res, boolean isPreview) {
+    public void init(RenderScriptGL rs, Resources res, boolean isPreview) {
         mRS = rs;
         mResources = res;
         mPreview = isPreview;
@@ -58,7 +58,7 @@ public abstract class RenderScriptScene {
         return mResources;
     }
 
-    public RenderScript getRS() {
+    public RenderScriptGL getRS() {
         return mRS;
     }
 
