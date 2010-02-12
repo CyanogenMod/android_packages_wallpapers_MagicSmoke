@@ -288,9 +288,10 @@ int main(int launchID) {
     int now = uptimeMillis();
     timedelta = ((float)(now - lastuptime)) / 44.f;
     lastuptime = now;
-    if (timedelta > 100) {
-        // If we didn't render anything for several seconds, just pretend time stopped.
-        timedelta = 1;
+    if (timedelta > 3) {
+        // Limit the step adjustment factor to 3, so we don't get a sudden jump
+        // after coming back from sleep.
+        timedelta = 3;
     }
 
     i = State->mPreset;
