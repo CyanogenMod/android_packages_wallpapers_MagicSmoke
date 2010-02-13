@@ -21,6 +21,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.magicsmoke">
 
+    <original-package android:name="com.android.magicsmoke" />
+
     <uses-feature android:name="android.software.live_wallpaper" />
 
     <uses-permission android:name="android.permission.SET_WALLPAPER_COMPONENT" />
