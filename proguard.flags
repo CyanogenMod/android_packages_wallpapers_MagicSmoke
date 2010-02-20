@@ -1,0 +1,3 @@
+-keep class com.android.magicsmoke.**$WorldState {
+  public <fields>;
+}
