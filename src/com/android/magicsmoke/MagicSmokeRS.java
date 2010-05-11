@@ -269,7 +269,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     @Override
     protected ScriptC createScript() {
-
+/*
         // Create a renderscript type from a java class. The specified name doesn't
         // really matter; the name by which we refer to the object in RenderScript
         // will be specified later.
@@ -361,5 +361,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
 
         return script;
+        */
+        return null;
     }
 }
