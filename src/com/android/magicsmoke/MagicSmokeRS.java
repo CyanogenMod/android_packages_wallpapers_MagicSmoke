@@ -45,6 +45,7 @@ import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.os.Bundle;
 
 import java.util.TimeZone;
 
@@ -66,8 +67,8 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         public int   mBlendFunc;
     }
     WorldState mWorldState = new WorldState();
-    private Type mStateType;
-    private Allocation mState;
+    //private Type mStateType;
+    //private Allocation mState;
 
     private ProgramStore mPfsBackgroundOne;
     private ProgramStore mPfsBackgroundSrc;
@@ -75,6 +76,8 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     private Sampler mSampler;
     private Allocation[] mSourceTextures;
     private Allocation[] mRealTextures;
+
+    private ScriptC_MagicSmoke mScript;
 
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
@@ -161,7 +164,6 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         makeNewState();
-        mState.data(mWorldState);
     }
 
     void makeNewState() {
@@ -180,6 +182,20 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mWorldState.mAlphaMul = mPreset[p].mAlphaMul;
         mWorldState.mPreMul = mPreset[p].mPreMul ? 1 : 0;
         mWorldState.mBlendFunc = mPreset[p].mBlendFunc;
+
+        if(mScript != null) {
+            mScript.set_gPreset(mWorldState.mPreset);
+            mScript.set_gTextureMask(mWorldState.mTextureMask);
+            mScript.set_gRotate(mWorldState.mRotate);
+            mScript.set_gTextureSwap(mWorldState.mTextureSwap);
+            mScript.set_gProcessTextureMode(mWorldState.mProcessTextureMode);
+            mScript.set_gBackCol(mWorldState.mBackCol);
+            mScript.set_gLowCol(mWorldState.mLowCol);
+            mScript.set_gHighCol(mWorldState.mHighCol);
+            mScript.set_gAlphaMul(mWorldState.mAlphaMul);
+            mScript.set_gPreMul(mWorldState.mPreMul);
+            mScript.set_gBlendFunc(mWorldState.mBlendFunc);
+        }
     }
 
     @Override
@@ -191,6 +207,18 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     }
 
     @Override
+    public Bundle onCommand(String action, int x, int y, int z, Bundle extras,
+            boolean resultRequested) {
+
+        if ("android.wallpaper.tap".equals(action)) {
+            mTouchY = y;
+        }
+        mWorldState.mTilt = 0;
+        mScript.set_gTilt(mWorldState.mTilt);
+        return null;
+    }
+
+    /*@Override
     public void onTouchEvent(MotionEvent event) {
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -207,16 +235,16 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
                     dy = -4;
                 }
                 mWorldState.mTilt = dy;
-                mState.data(mWorldState);
+                mScript.set_gTilt(mWorldState.mTilt);
+                //mState.data(mWorldState);
         }
-    }
+    }*/
 
     @Override
-    public void setOffset(float xOffset, float yOffset, float xStep, float yStep,
-            int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
         mWorldState.mXOffset = xOffset;
-        mState.data(mWorldState);
+        mScript.set_gXOffset(mWorldState.mXOffset);
     }
 
     @Override
@@ -230,7 +258,6 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         super.start();
         mSharedPref.registerOnSharedPreferenceChangeListener(this);
         makeNewState();
-        mState.data(mWorldState);
     }
 
     float alphafactor;
@@ -245,9 +272,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         in.getPixels(pixels, 0, 256, 0, 0, 256, 256);
         mRealTextures[index] = Allocation.createTyped(mRS, mTextureType);
         mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType);
-        mSourceTextures[index].setName(name+"_src");
         mSourceTextures[index].data(pixels);
-        mRealTextures[index].setName(name);
         in.recycle();
     }
 
@@ -265,26 +290,39 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         loadBitmap(R.drawable.noise3, 2, "Tnoise3", alphamul, lowcol, highcol);
         loadBitmap(R.drawable.noise4, 3, "Tnoise4", alphamul, lowcol, highcol);
         loadBitmap(R.drawable.noise5, 4, "Tnoise5", alphamul, lowcol, highcol);
+
+        mScript.set_gTnoise1(mRealTextures[0]);
+        mScript.set_gTnoise2(mRealTextures[1]);
+        mScript.set_gTnoise3(mRealTextures[2]);
+        mScript.set_gTnoise4(mRealTextures[3]);
+        mScript.set_gTnoise5(mRealTextures[4]);
+
+        mScript.bind_gNoisesrc1(mSourceTextures[0]);
+        mScript.bind_gNoisesrc2(mSourceTextures[1]);
+        mScript.bind_gNoisesrc3(mSourceTextures[2]);
+        mScript.bind_gNoisesrc4(mSourceTextures[3]);
+        mScript.bind_gNoisesrc5(mSourceTextures[4]);
+
+        mScript.bind_gNoisedst1(mRealTextures[0]);
+        mScript.bind_gNoisedst2(mRealTextures[1]);
+        mScript.bind_gNoisedst3(mRealTextures[2]);
+        mScript.bind_gNoisedst4(mRealTextures[3]);
+        mScript.bind_gNoisedst5(mRealTextures[4]);
     }
 
     @Override
     protected ScriptC createScript() {
-/*
-        // Create a renderscript type from a java class. The specified name doesn't
-        // really matter; the name by which we refer to the object in RenderScript
-        // will be specified later.
-        mStateType = Type.createFromClass(mRS, WorldState.class, 1, "WorldState");
-        // Create an allocation from the type we just created.
-        mState = Allocation.createTyped(mRS, mStateType);
-        mState.data(mWorldState);
+
+        mScript = new ScriptC_MagicSmoke(mRS, mResources, R.raw.clouds_bc, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
         mPVBackground = pvb.create();
-        mPVBackground.setName("PVBackground");
         mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
         mPVBackground.bindAllocation(mPVAlloc);
         mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+
+        mScript.set_gPVBackground(mPVBackground);
 
         mSourceTextures = new Allocation[5];
         mRealTextures = new Allocation[5];
@@ -307,9 +345,10 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
             builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
                                ProgramFragment.Builder.Format.RGBA, 0);
             mPfBackground = builder.create();
-            mPfBackground.setName("PFBackground");
             mPfBackground.bindSampler(mSampler, 0);
         }
+
+        mScript.set_gPFBackground(mPfBackground);
 
         {
             ProgramStore.Builder builder = new ProgramStore.Builder(mRS, null, null);
@@ -318,50 +357,29 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
             builder.setDitherEnable(true); // without dithering there is severe banding
             builder.setDepthMask(false);
             mPfsBackgroundOne = builder.create();
-            mPfsBackgroundOne.setName("PFSBackgroundOne");
             builder.setBlendFunc(BlendSrcFunc.SRC_ALPHA, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
             mPfsBackgroundSrc = builder.create();
-            mPfsBackgroundSrc.setName("PFSBackgroundSrc");
         }
 
-        // Time to create the script
-        ScriptC.Builder sb = new ScriptC.Builder(mRS);
-        // Specify the name by which to refer to the WorldState object in the
-        // renderscript.
-        sb.setType(mStateType, "State", RSID_STATE);
-        sb.setType(mTextureType, "noisesrc1", RSID_NOISESRC1);
-        sb.setType(mTextureType, "noisedst1", RSID_NOISEDST1);
-        sb.setType(mTextureType, "noisesrc2", RSID_NOISESRC2);
-        sb.setType(mTextureType, "noisedst2", RSID_NOISEDST2);
-        sb.setType(mTextureType, "noisesrc3", RSID_NOISESRC3);
-        sb.setType(mTextureType, "noisedst3", RSID_NOISEDST3);
-        sb.setType(mTextureType, "noisesrc4", RSID_NOISESRC4);
-        sb.setType(mTextureType, "noisedst4", RSID_NOISEDST4);
-        sb.setType(mTextureType, "noisesrc5", RSID_NOISESRC5);
-        sb.setType(mTextureType, "noisedst5", RSID_NOISEDST5);
-        sb.setScript(mResources, R.raw.clouds);
-        sb.setRoot(true);
+        mScript.set_gPFSBackgroundOne(mPfsBackgroundOne);
+        mScript.set_gPFSBackgroundSrc(mPfsBackgroundSrc);
 
-        ScriptC script = sb.create();
-        script.setClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        script.setTimeZone(TimeZone.getDefault().getID());
+        mScript.setClearColor(0.5f, 0.0f, 0.0f, 1.0f);
 
-        script.bindAllocation(mState, RSID_STATE);
-        script.bindAllocation(mSourceTextures[0], RSID_NOISESRC1);
-        script.bindAllocation(mRealTextures[0], RSID_NOISEDST1);
-        script.bindAllocation(mSourceTextures[1], RSID_NOISESRC2);
-        script.bindAllocation(mRealTextures[1], RSID_NOISEDST2);
-        script.bindAllocation(mSourceTextures[2], RSID_NOISESRC3);
-        script.bindAllocation(mRealTextures[2], RSID_NOISEDST3);
-        script.bindAllocation(mSourceTextures[3], RSID_NOISESRC4);
-        script.bindAllocation(mRealTextures[3], RSID_NOISEDST4);
-        script.bindAllocation(mSourceTextures[4], RSID_NOISESRC5);
-        script.bindAllocation(mRealTextures[4], RSID_NOISEDST5);
-        //script.bindAllocation(mPVAlloc.mAlloc, RSID_PROGRAMVERTEX);
+        mScript.set_gPreset(mWorldState.mPreset);
+        mScript.set_gTextureMask(mWorldState.mTextureMask);
+        mScript.set_gRotate(mWorldState.mRotate);
+        mScript.set_gTextureSwap(mWorldState.mTextureSwap);
+        mScript.set_gProcessTextureMode(mWorldState.mProcessTextureMode);
+        mScript.set_gBackCol(mWorldState.mBackCol);
+        mScript.set_gLowCol(mWorldState.mLowCol);
+        mScript.set_gHighCol(mWorldState.mHighCol);
+        mScript.set_gAlphaMul(mWorldState.mAlphaMul);
+        mScript.set_gPreMul(mWorldState.mPreMul);
+        mScript.set_gBlendFunc(mWorldState.mBlendFunc);
+        mScript.set_gTilt(mWorldState.mTilt);
+        mScript.set_gXOffset(mWorldState.mXOffset);
 
-
-        return script;
-        */
-        return null;
+        return mScript;
     }
 }

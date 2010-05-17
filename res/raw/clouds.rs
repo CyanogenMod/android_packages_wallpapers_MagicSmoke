@@ -13,9 +13,10 @@
 // limitations under the License.
 
 #pragma version(1)
-#pragma stateVertex(PVBackground)
-#pragma stateRaster(parent)
-#pragma stateFragment(PFBackground)
+
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
+#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
 
 #define RSID_NOISESRC1 1
 #define RSID_NOISESRC2 2
@@ -28,6 +29,52 @@
 #define RSID_NOISEDST4 9
 #define RSID_NOISEDST5 10
 
+// State set from java
+float gXOffset;
+float gTilt;
+int   gPreset;
+int   gTextureMask;
+int   gRotate;
+int   gTextureSwap;
+int   gProcessTextureMode;
+int   gBackCol;
+int   gLowCol;
+int   gHighCol;
+float gAlphaMul;
+int   gPreMul;
+int   gBlendFunc;
+
+rs_program_vertex gPVBackground;
+rs_program_fragment gPFBackground;
+rs_program_store gPFSBackgroundOne;
+rs_program_store gPFSBackgroundSrc;
+
+rs_allocation gTnoise1;
+rs_allocation gTnoise2;
+rs_allocation gTnoise3;
+rs_allocation gTnoise4;
+rs_allocation gTnoise5;
+
+// can't export int pointers yet
+typedef struct Integers_s {
+    int value;
+} Integers_t;
+
+Integers_t *gNoisesrc1;
+Integers_t *gNoisesrc2;
+Integers_t *gNoisesrc3;
+Integers_t *gNoisesrc4;
+Integers_t *gNoisesrc5;
+
+Integers_t *gNoisedst1;
+Integers_t *gNoisedst2;
+Integers_t *gNoisedst3;
+Integers_t *gNoisedst4;
+Integers_t *gNoisedst5;
+
+#pragma rs export_var(gXOffset, gTilt, gPreset, gTextureMask, gRotate, gTextureSwap, gProcessTextureMode, gBackCol, gLowCol, gHighCol, gAlphaMul, gPreMul, gBlendFunc, gPVBackground, gPFBackground, gPFSBackgroundOne, gPFSBackgroundSrc, gTnoise1, gTnoise2, gTnoise3, gTnoise4, gTnoise5, gNoisesrc1, gNoisesrc2, gNoisesrc3, gNoisesrc4, gNoisesrc5, gNoisedst1, gNoisedst2, gNoisedst3, gNoisedst4, gNoisedst5)
+
+// Local script variables
 float xshift[5];
 float rotation[5];
 float scale[5];
@@ -36,15 +83,30 @@ int currentpreset;
 int lastuptime;
 float timedelta;
 
+void debugAll()
+{
+    debugP(10, (void *)gPreset);
+    debugP(10, (void *)gTextureMask);
+    debugP(10, (void *)gRotate);
+    debugP(10, (void *)gTextureSwap);
+    debugP(10, (void *)gProcessTextureMode);
+    debugP(10, (void *)gBackCol);
+    debugP(10, (void *)gLowCol);
+    debugP(10, (void *)gHighCol);
+    debugPf(10, gAlphaMul);
+    debugP(10, (void *)gPreMul);
+    debugP(10, (void *)gBlendFunc);
+}
+
 void drawCloud(float *ident, int id, int idx) {
     float mat1[16];
     float z = -8.f * idx;
     matrixLoadMat(mat1,ident);
-    matrixTranslate(mat1, -State->mXOffset * 8.f * idx, -State->mTilt * idx / 3.f, 0.f);
+    matrixTranslate(mat1, -gXOffset * 8.f * idx, -gTilt * idx / 3.f, 0.f);
     matrixRotate(mat1, rotation[idx], 0.f, 0.f, 1.f);
     vpLoadModelMatrix(mat1);
 
-    bindTexture(NAMED_PFBackground, 0, id);
+    bindTexture(gPFBackground, 0, id);
     drawQuadTexCoords(
             -1200.0f, -1200.0f, z,        // space
                 0.f + xshift[idx], 0.f,        // texture
@@ -64,7 +126,7 @@ void drawClouds(float* ident) {
 
     matrixLoadMat(mat1,ident);
 
-    if (State->mRotate != 0) {
+    if (gRotate != 0) {
         rotation[0] += 0.10 * timedelta;
         rotation[1] += 0.102f * timedelta;
         rotation[2] += 0.106f * timedelta;
@@ -72,46 +134,47 @@ void drawClouds(float* ident) {
         rotation[4] += 0.123f * timedelta;
     }
 
-    int mask = State->mTextureMask;
+    int mask = gTextureMask;
     if (mask & 1) {
         xshift[0] += 0.0010f * timedelta;
-        if (State->mTextureSwap != 0) {
-            drawCloud(mat1, NAMED_Tnoise5, 0);
+        if (gTextureSwap != 0) {
+            drawCloud(mat1, gTnoise5, 0);
         } else {
-            drawCloud(mat1, NAMED_Tnoise1, 0);
+            drawCloud(mat1, gTnoise1, 0);
         }
     }
 
     if (mask & 2) {
         xshift[1] += 0.00106 * timedelta;
-        drawCloud(mat1, NAMED_Tnoise2, 1);
+        drawCloud(mat1, gTnoise2, 1);
     }
 
     if (mask & 4) {
         xshift[2] += 0.00114f * timedelta;
-        drawCloud(mat1, NAMED_Tnoise3, 2);
+        drawCloud(mat1, gTnoise3, 2);
     }
 
     if (mask & 8) {
         xshift[3] += 0.00118f * timedelta;
-        drawCloud(mat1, NAMED_Tnoise4, 3);
+        drawCloud(mat1, gTnoise4, 3);
     }
 
     if (mask & 16) {
         xshift[4] += 0.00127f * timedelta;
-        drawCloud(mat1, NAMED_Tnoise5, 4);
+        drawCloud(mat1, gTnoise5, 4);
     }
 
     // Make sure the texture coordinates don't continuously increase
     for(i = 0; i < 5; i++) {
-        while (xshift[i] >= 1.f) {
-            xshift[i] -= 1.f;
+        if (xshift[i] > 1.f) {
+            xshift[i] -= floor(xshift[i]);
         }
     }
     // Make sure the rotation angles don't continuously increase
     for(i = 0; i < 5; i++) {
-        while (rotation[i] >= 360.f) {
-            rotation[i] -= 360.f;
+        if (rotation[i] > 360.f) {
+            float multiplier = floor(rotation[i]/360.f);
+            rotation[i] -= 360.f * multiplier;
         }
     }
 }
@@ -126,18 +189,19 @@ int premul(int rgb, int a) {
     return r << 16 | g << 8 | b;
 }
 
+
 void makeTexture(int *src, int *dst, int rsid) {
-    
+
     int x;
     int y;
-    int pm = State->mPreMul;
+    int pm = gPreMul;
 
-    if (State->mProcessTextureMode == 1) {
-        int lowcol = State->mLowCol;
-        int highcol = State->mHighCol;
-        
+    if (gProcessTextureMode == 1) {
+        int lowcol = gLowCol;
+        int highcol = gHighCol;
+
         for (y=0;y<256;y++) {
-            for (x=0;x<256;x++) { 
+            for (x=0;x<256;x++) {
                 int pix = src[y*256+x];
                 int lum = pix & 0x00ff;
                 int newpix;
@@ -159,14 +223,14 @@ void makeTexture(int *src, int *dst, int rsid) {
                 dst[y*256+x] = newpix;
             }
         }
-        alphafactor *= State->mAlphaMul;
-    } else if (State->mProcessTextureMode == 2) {
-        int lowcol = State->mLowCol;
-        int highcol = State->mHighCol;
+        alphafactor *= gAlphaMul;
+    } else if (gProcessTextureMode == 2) {
+        int lowcol = gLowCol;
+        int highcol = gHighCol;
         float scale = 255.f / (255.f - lowcol);
-        
+
         for (y=0;y<256;y++) {
-            for (x=0;x<256;x++) { 
+            for (x=0;x<256;x++) {
                 int pix = src[y*256+x];
                 int alpha = pix & 0x00ff;
                 if (alpha < lowcol) {
@@ -183,14 +247,14 @@ void makeTexture(int *src, int *dst, int rsid) {
                 dst[y*256+x] = newpix;
             }
         }
-        alphafactor *= State->mAlphaMul;
-    } else if (State->mProcessTextureMode == 3) {
-        int lowcol = State->mLowCol;
-        int highcol = State->mHighCol;
+        alphafactor *= gAlphaMul;
+    } else if (gProcessTextureMode == 3) {
+        int lowcol = gLowCol;
+        int highcol = gHighCol;
         float scale = 255.f / (255.f - lowcol);
-        
+
         for (y=0;y<256;y++) {
-            for (x=0;x<256;x++) { 
+            for (x=0;x<256;x++) {
                 int pix = src[y*256+x];
                 int lum = pix & 0x00ff;
                 int newpix;
@@ -214,9 +278,8 @@ void makeTexture(int *src, int *dst, int rsid) {
                 dst[y*256+x] = newpix;
             }
         }
-        alphafactor *= State->mAlphaMul;
+        alphafactor *= gAlphaMul;
     } else {
-
         for (y=0;y<256;y++) {
             for (x=0;x<256;x++) {
                 int rgb = *src++;
@@ -229,17 +292,17 @@ void makeTexture(int *src, int *dst, int rsid) {
             }
         }
     }
+
     uploadToTexture(rsid, 0);
 }
 
 void makeTextures() {
-    debugI32("makeTextures", State->mPreset);
     alphafactor = 1.f;
-    makeTexture((int*)noisesrc1, (int*)noisedst1, NAMED_Tnoise1);
-    makeTexture((int*)noisesrc2, (int*)noisedst2, NAMED_Tnoise2);
-    makeTexture((int*)noisesrc3, (int*)noisedst3, NAMED_Tnoise3);
-    makeTexture((int*)noisesrc4, (int*)noisedst4, NAMED_Tnoise4);
-    makeTexture((int*)noisesrc5, (int*)noisedst5, NAMED_Tnoise5);
+    makeTexture((int*)gNoisesrc1, (int*)gNoisedst1, gTnoise1);
+    makeTexture((int*)gNoisesrc2, (int*)gNoisedst2, gTnoise2);
+    makeTexture((int*)gNoisesrc3, (int*)gNoisedst3, gTnoise3);
+    makeTexture((int*)gNoisesrc4, (int*)gNoisedst4, gTnoise4);
+    makeTexture((int*)gNoisesrc5, (int*)gNoisedst5, gTnoise5);
 }
 
 
@@ -252,10 +315,12 @@ struct color {
 
 void init() {
     int i;
-    for (i=0;i<4;i++) {
+
+    for (i=0;i<5;i++) {
         xshift[i] = 0.f;
         rotation[i] = 360.f * i / 5.f;
     }
+
     scale[0] = 4.0f; // changed below based on preset
     scale[1] = 3.0f;
     scale[2] = 3.4f;
@@ -268,21 +333,25 @@ void init() {
 }
 
 
-int main(int launchID) {
+int root(int launchID) {
 
     int i;
     float ident[16];
-    float masterscale = 0.0041f;// / (State->mXOffset * 4.f + 1.f);
+    float masterscale = 0.0041f;// / (gXOffset * 4.f + 1.f);
+
+    bindProgramVertex(gPVBackground);
+    bindProgramFragment(gPFBackground);
+
     matrixLoadIdentity(ident);
-    matrixTranslate(ident, -State->mXOffset, 0.f, 0.f);
+    matrixTranslate(ident, -gXOffset, 0.f, 0.f);
     matrixScale(ident, masterscale, masterscale, masterscale);
     //matrixRotate(ident, 0.f, 0.f, 0.f, 1.f);
-    matrixRotate(ident, -State->mTilt, 1.f, 0.f, 0.f);
+    matrixRotate(ident, -gTilt, 1.f, 0.f, 0.f);
 
-    if (State->mBlendFunc) {
-        bindProgramStore(NAMED_PFSBackgroundOne);
+    if (gBlendFunc) {
+        bindProgramStore(gPFSBackgroundOne);
     } else {
-        bindProgramStore(NAMED_PFSBackgroundSrc);
+        bindProgramStore(gPFSBackgroundSrc);
     }
 
     int now = uptimeMillis();
@@ -294,10 +363,10 @@ int main(int launchID) {
         timedelta = 3;
     }
 
-    i = State->mPreset;
+    i = gPreset;
     if (i != currentpreset) {
         currentpreset = i;
-        int rgb = State->mBackCol;
+        int rgb = gBackCol;
         pfClearColor(
             ((float)((rgb >> 16)  & 0xff)) / 255.0f,
             ((float)((rgb >> 8)  & 0xff)) / 255.0f,
@@ -306,7 +375,7 @@ int main(int launchID) {
         makeTextures();
     }
 
-    if (State->mTextureSwap != 0) {
+     if (gTextureSwap != 0) {
         scale[0] = .25f;
     } else {
         scale[0] = 4.f;
