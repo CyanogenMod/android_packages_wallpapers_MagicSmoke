@@ -364,8 +364,6 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mScript.set_gPFSBackgroundOne(mPfsBackgroundOne);
         mScript.set_gPFSBackgroundSrc(mPfsBackgroundSrc);
 
-        mScript.setClearColor(0.5f, 0.0f, 0.0f, 1.0f);
-
         mScript.set_gPreset(mWorldState.mPreset);
         mScript.set_gTextureMask(mWorldState.mTextureMask);
         mScript.set_gRotate(mWorldState.mRotate);

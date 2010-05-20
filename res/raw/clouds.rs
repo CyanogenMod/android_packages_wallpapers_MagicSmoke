@@ -82,32 +82,18 @@ float alphafactor;
 int currentpreset;
 int lastuptime;
 float timedelta;
+static float4 clearColor = {0.5f, 0.0f, 0.0f, 1.0f};
 
-void debugAll()
-{
-    debugP(10, (void *)gPreset);
-    debugP(10, (void *)gTextureMask);
-    debugP(10, (void *)gRotate);
-    debugP(10, (void *)gTextureSwap);
-    debugP(10, (void *)gProcessTextureMode);
-    debugP(10, (void *)gBackCol);
-    debugP(10, (void *)gLowCol);
-    debugP(10, (void *)gHighCol);
-    debugPf(10, gAlphaMul);
-    debugP(10, (void *)gPreMul);
-    debugP(10, (void *)gBlendFunc);
-}
-
-void drawCloud(float *ident, int id, int idx) {
-    float mat1[16];
+void drawCloud(rs_matrix4x4 *ident, int id, int idx) {
+    rs_matrix4x4 mat1;
     float z = -8.f * idx;
-    matrixLoadMat(mat1,ident);
-    matrixTranslate(mat1, -gXOffset * 8.f * idx, -gTilt * idx / 3.f, 0.f);
-    matrixRotate(mat1, rotation[idx], 0.f, 0.f, 1.f);
-    vpLoadModelMatrix(mat1);
+    rsMatrixLoadMat(&mat1, ident);
+    rsMatrixTranslate(&mat1, -gXOffset * 8.f * idx, -gTilt * idx / 3.f, 0.f);
+    rsMatrixRotate(&mat1, rotation[idx], 0.f, 0.f, 1.f);
+    rsgProgramVertexLoadModelMatrix(&mat1);
 
-    bindTexture(gPFBackground, 0, id);
-    drawQuadTexCoords(
+    rsgBindTexture(gPFBackground, 0, id);
+    rsgDrawQuadTexCoords(
             -1200.0f, -1200.0f, z,        // space
                 0.f + xshift[idx], 0.f,        // texture
             1200, -1200.0f, z,            // space
@@ -118,13 +104,9 @@ void drawCloud(float *ident, int id, int idx) {
                 0.f + xshift[idx], scale[idx]);       // texture
 }
 
-void drawClouds(float* ident) {
-
-    int i;
-
-    float mat1[16];
-
-    matrixLoadMat(mat1,ident);
+void drawClouds(rs_matrix4x4 *ident) {
+    rs_matrix4x4 mat1;
+    rsMatrixLoadMat(&mat1, ident);
 
     if (gRotate != 0) {
         rotation[0] += 0.10 * timedelta;
@@ -138,33 +120,34 @@ void drawClouds(float* ident) {
     if (mask & 1) {
         xshift[0] += 0.0010f * timedelta;
         if (gTextureSwap != 0) {
-            drawCloud(mat1, gTnoise5, 0);
+            drawCloud(&mat1, gTnoise5, 0);
         } else {
-            drawCloud(mat1, gTnoise1, 0);
+            drawCloud(&mat1, gTnoise1, 0);
         }
     }
 
     if (mask & 2) {
         xshift[1] += 0.00106 * timedelta;
-        drawCloud(mat1, gTnoise2, 1);
+        drawCloud(&mat1, gTnoise2, 1);
     }
 
     if (mask & 4) {
         xshift[2] += 0.00114f * timedelta;
-        drawCloud(mat1, gTnoise3, 2);
+        drawCloud(&mat1, gTnoise3, 2);
     }
 
     if (mask & 8) {
         xshift[3] += 0.00118f * timedelta;
-        drawCloud(mat1, gTnoise4, 3);
+        drawCloud(&mat1, gTnoise4, 3);
     }
 
     if (mask & 16) {
         xshift[4] += 0.00127f * timedelta;
-        drawCloud(mat1, gTnoise5, 4);
+        drawCloud(&mat1, gTnoise5, 4);
     }
 
     // Make sure the texture coordinates don't continuously increase
+    int i;
     for(i = 0; i < 5; i++) {
         if (xshift[i] > 1.f) {
             xshift[i] -= floor(xshift[i]);
@@ -293,7 +276,7 @@ void makeTexture(int *src, int *dst, int rsid) {
         }
     }
 
-    uploadToTexture(rsid, 0);
+    rsgUploadToTexture(rsid, 0);
 }
 
 void makeTextures() {
@@ -305,18 +288,8 @@ void makeTextures() {
     makeTexture((int*)gNoisesrc5, (int*)gNoisedst5, gTnoise5);
 }
 
-
-
-struct color {
-    float r;
-    float g;
-    float b;
-};
-
 void init() {
-    int i;
-
-    for (i=0;i<5;i++) {
+    for (int i=0;i<5;i++) {
         xshift[i] = 0.f;
         rotation[i] = 360.f * i / 5.f;
     }
@@ -328,33 +301,32 @@ void init() {
     scale[4] = 4.2f;
 
     currentpreset = -1;
-    lastuptime = uptimeMillis();
+    lastuptime = (int)rsUptimeMillis();
     timedelta = 0;
 }
 
 
 int root(int launchID) {
-
     int i;
-    float ident[16];
+    rs_matrix4x4 ident;
     float masterscale = 0.0041f;// / (gXOffset * 4.f + 1.f);
 
-    bindProgramVertex(gPVBackground);
-    bindProgramFragment(gPFBackground);
+    rsgBindProgramVertex(gPVBackground);
+    rsgBindProgramFragment(gPFBackground);
 
-    matrixLoadIdentity(ident);
-    matrixTranslate(ident, -gXOffset, 0.f, 0.f);
-    matrixScale(ident, masterscale, masterscale, masterscale);
-    //matrixRotate(ident, 0.f, 0.f, 0.f, 1.f);
-    matrixRotate(ident, -gTilt, 1.f, 0.f, 0.f);
+    rsMatrixLoadIdentity(&ident);
+    rsMatrixTranslate(&ident, -gXOffset, 0.f, 0.f);
+    rsMatrixScale(&ident, masterscale, masterscale, masterscale);
+    //rsMatrixRotate(&ident, 0.f, 0.f, 0.f, 1.f);
+    rsMatrixRotate(&ident, -gTilt, 1.f, 0.f, 0.f);
 
     if (gBlendFunc) {
-        bindProgramStore(gPFSBackgroundOne);
+        rsgBindProgramStore(gPFSBackgroundOne);
     } else {
-        bindProgramStore(gPFSBackgroundSrc);
+        rsgBindProgramStore(gPFSBackgroundSrc);
     }
 
-    int now = uptimeMillis();
+    int now = (int)rsUptimeMillis();
     timedelta = ((float)(now - lastuptime)) / 44.f;
     lastuptime = now;
     if (timedelta > 3) {
@@ -366,21 +338,19 @@ int root(int launchID) {
     i = gPreset;
     if (i != currentpreset) {
         currentpreset = i;
-        int rgb = gBackCol;
-        pfClearColor(
-            ((float)((rgb >> 16)  & 0xff)) / 255.0f,
-            ((float)((rgb >> 8)  & 0xff)) / 255.0f,
-            ((float)(rgb & 0xff)) / 255.0f,
-            1.0f);
+        clearColor.x = ((float)((gBackCol >> 16)  & 0xff)) / 255.0f;
+        clearColor.y = ((float)((gBackCol >> 8)  & 0xff)) / 255.0f;
+        clearColor.z = ((float)(gBackCol & 0xff)) / 255.0f;
         makeTextures();
     }
+    rsgClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 
-     if (gTextureSwap != 0) {
+    if (gTextureSwap != 0) {
         scale[0] = .25f;
     } else {
         scale[0] = 4.f;
     }
-    drawClouds(ident);
+    drawClouds(&ident);
 
     return 55;
 }
