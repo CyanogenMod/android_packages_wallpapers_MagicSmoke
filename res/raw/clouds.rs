@@ -14,6 +14,8 @@
 
 #pragma version(1)
 
+#pragma rs java_package_name(com.android.magicsmoke)
+
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
 #include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
@@ -55,24 +57,20 @@ rs_allocation gTnoise3;
 rs_allocation gTnoise4;
 rs_allocation gTnoise5;
 
-// can't export int pointers yet
-typedef struct Integers_s {
-    int value;
-} Integers_t;
+int *gNoisesrc1;
+int *gNoisesrc2;
+int *gNoisesrc3;
+int *gNoisesrc4;
+int *gNoisesrc5;
 
-Integers_t *gNoisesrc1;
-Integers_t *gNoisesrc2;
-Integers_t *gNoisesrc3;
-Integers_t *gNoisesrc4;
-Integers_t *gNoisesrc5;
-
-Integers_t *gNoisedst1;
-Integers_t *gNoisedst2;
-Integers_t *gNoisedst3;
-Integers_t *gNoisedst4;
-Integers_t *gNoisedst5;
+int *gNoisedst1;
+int *gNoisedst2;
+int *gNoisedst3;
+int *gNoisedst4;
+int *gNoisedst5;
 
 #pragma rs export_var(gXOffset, gTilt, gPreset, gTextureMask, gRotate, gTextureSwap, gProcessTextureMode, gBackCol, gLowCol, gHighCol, gAlphaMul, gPreMul, gBlendFunc, gPVBackground, gPFBackground, gPFSBackgroundOne, gPFSBackgroundSrc, gTnoise1, gTnoise2, gTnoise3, gTnoise4, gTnoise5, gNoisesrc1, gNoisesrc2, gNoisesrc3, gNoisesrc4, gNoisesrc5, gNoisedst1, gNoisedst2, gNoisedst3, gNoisedst4, gNoisedst5)
+#pragma rs_export_func()
 
 // Local script variables
 float xshift[5];
@@ -84,7 +82,7 @@ int lastuptime;
 float timedelta;
 static float4 clearColor = {0.5f, 0.0f, 0.0f, 1.0f};
 
-void drawCloud(rs_matrix4x4 *ident, int id, int idx) {
+void drawCloud(rs_matrix4x4 *ident, rs_allocation allocat, int idx) {
     rs_matrix4x4 mat1;
     float z = -8.f * idx;
     rsMatrixLoadMat(&mat1, ident);
@@ -92,7 +90,7 @@ void drawCloud(rs_matrix4x4 *ident, int id, int idx) {
     rsMatrixRotate(&mat1, rotation[idx], 0.f, 0.f, 1.f);
     rsgProgramVertexLoadModelMatrix(&mat1);
 
-    rsgBindTexture(gPFBackground, 0, id);
+    rsgBindTexture(gPFBackground, 0, allocat);
     rsgDrawQuadTexCoords(
             -1200.0f, -1200.0f, z,        // space
                 0.f + xshift[idx], 0.f,        // texture
@@ -173,7 +171,7 @@ int premul(int rgb, int a) {
 }
 
 
-void makeTexture(int *src, int *dst, int rsid) {
+void makeTexture(int *src, int *dst, rs_allocation rsid) {
 
     int x;
     int y;

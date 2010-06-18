@@ -77,7 +77,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     private Allocation[] mSourceTextures;
     private Allocation[] mRealTextures;
 
-    private ScriptC_MagicSmoke mScript;
+    private ScriptC_Clouds mScript;
 
     private ProgramVertex mPVBackground;
     private ProgramVertex.MatrixAllocation mPVAlloc;
@@ -313,7 +313,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_MagicSmoke(mRS, mResources, R.raw.clouds_bc, true);
+        mScript = new ScriptC_Clouds(mRS, mResources, R.raw.clouds_bc, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
