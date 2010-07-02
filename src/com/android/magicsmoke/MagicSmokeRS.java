@@ -38,7 +38,6 @@ import android.renderscript.ProgramStore;
 import android.renderscript.ProgramVertex;
 import android.renderscript.Sampler;
 import android.renderscript.ScriptC;
-import android.renderscript.SimpleMesh;
 import android.renderscript.Type;
 import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
