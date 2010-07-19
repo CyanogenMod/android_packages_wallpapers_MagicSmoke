@@ -16,9 +16,9 @@
 
 #pragma rs java_package_name(com.android.magicsmoke)
 
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_types.rsh"
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_math.rsh"
-#include "../../../../../frameworks/base/libs/rs/scriptc/rs_graphics.rsh"
+#include "rs_types.rsh"
+#include "rs_math.rsh"
+#include "rs_graphics.rsh"
 
 #define RSID_NOISESRC1 1
 #define RSID_NOISESRC2 2
@@ -85,7 +85,7 @@ static float4 clearColor = {0.5f, 0.0f, 0.0f, 1.0f};
 void drawCloud(rs_matrix4x4 *ident, rs_allocation allocat, int idx) {
     rs_matrix4x4 mat1;
     float z = -8.f * idx;
-    rsMatrixLoadMat(&mat1, ident);
+    rsMatrixLoad(&mat1, ident);
     rsMatrixTranslate(&mat1, -gXOffset * 8.f * idx, -gTilt * idx / 3.f, 0.f);
     rsMatrixRotate(&mat1, rotation[idx], 0.f, 0.f, 1.f);
     rsgProgramVertexLoadModelMatrix(&mat1);
@@ -104,7 +104,7 @@ void drawCloud(rs_matrix4x4 *ident, rs_allocation allocat, int idx) {
 
 void drawClouds(rs_matrix4x4 *ident) {
     rs_matrix4x4 mat1;
-    rsMatrixLoadMat(&mat1, ident);
+    rsMatrixLoad(&mat1, ident);
 
     if (gRotate != 0) {
         rotation[0] += 0.10 * timedelta;

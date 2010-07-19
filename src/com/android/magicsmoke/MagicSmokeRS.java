@@ -312,7 +312,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_Clouds(mRS, mResources, R.raw.clouds_bc, true);
+        mScript = new ScriptC_Clouds(mRS, mResources, R.raw.clouds, true);
 
         // First set up the coordinate system and such
         ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);

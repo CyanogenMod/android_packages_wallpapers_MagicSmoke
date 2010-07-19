@@ -19,7 +19,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_SRC_FILES := $(call all-subdir-java-files)
+LOCAL_SRC_FILES := $(call all-subdir-java-files) $(call all-renderscript-files-under, src)
 
 LOCAL_PACKAGE_NAME := MagicSmokeWallpapers
 LOCAL_CERTIFICATE := shared
