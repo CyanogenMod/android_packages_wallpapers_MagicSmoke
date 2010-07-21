@@ -16,8 +16,6 @@
 
 #pragma rs java_package_name(com.android.magicsmoke)
 
-#include "rs_types.rsh"
-#include "rs_math.rsh"
 #include "rs_graphics.rsh"
 
 #define RSID_NOISESRC1 1
