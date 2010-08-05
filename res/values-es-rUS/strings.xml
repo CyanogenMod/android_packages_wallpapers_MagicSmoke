@@ -19,7 +19,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="wallpapers" msgid="9040514152147134380">"Fondos de pantalla humo mágico"</string>
+    <string name="wallpapers" msgid="9040514152147134380">"Fondos de pantalla humo mágico "</string>
     <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"Humo mágico"</string>
     <string name="author" msgid="3728706901510651795">"Google"</string>
     <string name="magicsmoke_desc" msgid="4882321171007683983">"Dibuja humo, nubes, agua y plasmas."</string>
