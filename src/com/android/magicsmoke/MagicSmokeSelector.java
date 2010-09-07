@@ -141,11 +141,9 @@ public class MagicSmokeSelector extends Activity {
     }
     
     private void updatePrefs() {
-
         Editor edit = mSharedPref.edit();
         edit.putInt("preset", mCurrentPreset);
-        edit.commit();
-
+        edit.apply();
     }
     
     class WallpaperConnection extends IWallpaperConnection.Stub implements ServiceConnection {
