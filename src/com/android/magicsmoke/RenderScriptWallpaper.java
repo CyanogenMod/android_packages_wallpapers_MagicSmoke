@@ -19,6 +19,7 @@ package com.android.magicsmoke;
 
 import android.service.wallpaper.WallpaperService;
 import android.os.Bundle;
+import android.graphics.PixelFormat;
 import android.renderscript.RenderScriptGL;
 import android.renderscript.RenderScript;
 import android.util.Log;
@@ -42,6 +43,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             super.onCreate(surfaceHolder);
             setTouchEventsEnabled(false);
             surfaceHolder.setSizeFromLayout();
+            surfaceHolder.setFormat(PixelFormat.RGBX_8888);
         }
 
         @Override
