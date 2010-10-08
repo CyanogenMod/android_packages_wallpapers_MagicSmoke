@@ -67,17 +67,16 @@ int *gNoisedst3;
 int *gNoisedst4;
 int *gNoisedst5;
 
-#pragma rs export_var(gXOffset, gTilt, gPreset, gTextureMask, gRotate, gTextureSwap, gProcessTextureMode, gBackCol, gLowCol, gHighCol, gAlphaMul, gPreMul, gBlendFunc, gPVBackground, gPFBackground, gPFSBackgroundOne, gPFSBackgroundSrc, gTnoise1, gTnoise2, gTnoise3, gTnoise4, gTnoise5, gNoisesrc1, gNoisesrc2, gNoisesrc3, gNoisesrc4, gNoisesrc5, gNoisedst1, gNoisedst2, gNoisedst3, gNoisedst4, gNoisedst5)
 #pragma rs_export_func()
 
 // Local script variables
-float xshift[5];
-float rotation[5];
-float scale[5];
-float alphafactor;
-int currentpreset;
-int lastuptime;
-float timedelta;
+static float xshift[5];
+static float rotation[5];
+static float scale[5];
+static float alphafactor;
+static int currentpreset;
+static int lastuptime;
+static float timedelta;
 static float4 clearColor = {0.5f, 0.0f, 0.0f, 1.0f};
 
 void drawCloud(rs_matrix4x4 *ident, rs_allocation allocat, int idx) {
