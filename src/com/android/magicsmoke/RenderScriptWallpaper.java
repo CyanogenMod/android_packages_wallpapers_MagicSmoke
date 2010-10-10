@@ -109,7 +109,8 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             while (surface == null) {
                 surface = holder.getSurface();
             }
-            mRs = new RenderScriptGL(false, false);
+            RenderScriptGL.SurfaceConfig sc = new RenderScriptGL.SurfaceConfig();
+            mRs = new RenderScriptGL(sc);
             mRs.contextSetPriority(RenderScript.Priority.LOW);
         }
 
