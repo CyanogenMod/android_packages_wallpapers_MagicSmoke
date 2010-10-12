@@ -43,7 +43,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             super.onCreate(surfaceHolder);
             setTouchEventsEnabled(false);
             surfaceHolder.setSizeFromLayout();
-            surfaceHolder.setFormat(PixelFormat.RGBX_8888);
+            surfaceHolder.setFormat(PixelFormat.RGB_565);
         }
 
         @Override

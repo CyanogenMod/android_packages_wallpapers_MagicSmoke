@@ -32,6 +32,7 @@ import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Dimension;
 import android.renderscript.Element;
+import android.renderscript.Mesh;
 import android.renderscript.Primitive;
 import android.renderscript.ProgramFragment;
 import android.renderscript.ProgramStore;
@@ -69,16 +70,20 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     //private Type mStateType;
     //private Allocation mState;
 
-    private ProgramStore mPfsBackgroundOne;
-    private ProgramStore mPfsBackgroundSrc;
-    private ProgramFragment mPfBackground;
-    private Sampler mSampler;
+    private ProgramStore mPStore;
+    private ProgramFragment mPF5tex;
+    private ProgramFragment mPF4tex;
+    private Sampler[] mSampler;
     private Allocation[] mSourceTextures;
     private Allocation[] mRealTextures;
 
     private ScriptC_clouds mScript;
 
-    private ProgramVertex mPVBackground;
+    private ScriptField_VertexShaderConstants_s mVSConst;
+    private ScriptField_FragmentShaderConstants_s mFSConst;
+
+    private ProgramVertex mPV5tex;
+    private ProgramVertex mPV4tex;
     private ProgramVertex.MatrixAllocation mPVAlloc;
 
     private static final int RSID_STATE = 0;
@@ -314,14 +319,24 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
         mScript = new ScriptC_clouds(mRS, mResources, R.raw.clouds, true);
 
-        // First set up the coordinate system and such
-        ProgramVertex.Builder pvb = new ProgramVertex.Builder(mRS, null, null);
-        mPVBackground = pvb.create();
-        mPVAlloc = new ProgramVertex.MatrixAllocation(mRS);
-        mPVBackground.bindAllocation(mPVAlloc);
-        mPVAlloc.setupProjectionNormalized(mWidth, mHeight);
+        mVSConst = new ScriptField_VertexShaderConstants_s(mRS, 1);
+        mScript.bind_gVSConstants(mVSConst);
 
-        mScript.set_gPVBackground(mPVBackground);
+        {
+            ProgramVertex.ShaderBuilder builder = new ProgramVertex.ShaderBuilder(mRS);
+            builder.setShader(mResources, R.raw.pv5tex);
+            builder.addConstant(mVSConst.getAllocation().getType());
+            builder.addInput(ScriptField_VertexInputs_s.createElement(mRS));
+
+            mPV5tex = builder.create();
+            mPV5tex.bindConstants(mVSConst.getAllocation(), 0);
+
+            builder.setShader(mResources, R.raw.pv4tex);
+            mPV4tex = builder.create();
+            mPV4tex.bindConstants(mVSConst.getAllocation(), 0);
+        }
+        mScript.set_gPV5tex(mPV5tex);
+        mScript.set_gPV4tex(mPV4tex);
 
         mSourceTextures = new Allocation[5];
         mRealTextures = new Allocation[5];
@@ -337,31 +352,46 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         samplerBuilder.setMag(LINEAR);
         samplerBuilder.setWrapS(WRAP);
         samplerBuilder.setWrapT(WRAP);
-        mSampler = samplerBuilder.create();
+        mSampler = new Sampler[5];
+        for (int i = 0; i < 5; i++)
+            mSampler[i] = samplerBuilder.create();
 
         {
-            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
-            builder.setTexture(ProgramFragment.Builder.EnvMode.REPLACE,
-                               ProgramFragment.Builder.Format.RGBA, 0);
-            mPfBackground = builder.create();
-            mPfBackground.bindSampler(mSampler, 0);
+            mFSConst = new ScriptField_FragmentShaderConstants_s(mRS, 1);
+            mScript.bind_gFSConstants(mFSConst);
+
+            ProgramFragment.ShaderBuilder builder = new ProgramFragment.ShaderBuilder(mRS);
+            builder.setShader(mResources, R.raw.pf5tex);
+            builder.setTextureCount(5);
+            builder.addConstant(mFSConst.getAllocation().getType());
+
+            mPF5tex = builder.create();
+            for (int i = 0; i < 5; i++)
+                mPF5tex.bindSampler(mSampler[i], i);
+            mPF5tex.bindConstants(mFSConst.getAllocation(), 0);
+
+            builder.setShader(mResources, R.raw.pf4tex);
+            builder.setTextureCount(4);
+            mPF4tex = builder.create();
+            for (int i = 0; i < 4; i++)
+                mPF4tex.bindSampler(mSampler[i], i);
+            mPF4tex.bindConstants(mFSConst.getAllocation(), 0);
         }
 
-        mScript.set_gPFBackground(mPfBackground);
+        mScript.set_gPF5tex(mPF5tex);
+        mScript.set_gPF4tex(mPF4tex);
+
 
         {
             ProgramStore.Builder builder = new ProgramStore.Builder(mRS, null, null);
-            builder.setDepthFunc(ProgramStore.DepthFunc.EQUAL);
-            builder.setBlendFunc(BlendSrcFunc.ONE, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
+            builder.setDepthFunc(ProgramStore.DepthFunc.ALWAYS);
+            builder.setBlendFunc(BlendSrcFunc.ONE, BlendDstFunc.ZERO);
             builder.setDitherEnable(true); // without dithering there is severe banding
             builder.setDepthMask(false);
-            mPfsBackgroundOne = builder.create();
-            builder.setBlendFunc(BlendSrcFunc.SRC_ALPHA, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
-            mPfsBackgroundSrc = builder.create();
+            mPStore = builder.create();
         }
 
-        mScript.set_gPFSBackgroundOne(mPfsBackgroundOne);
-        mScript.set_gPFSBackgroundSrc(mPfsBackgroundSrc);
+        mScript.set_gPStore(mPStore);
 
         mScript.set_gPreset(mWorldState.mPreset);
         mScript.set_gTextureMask(mWorldState.mTextureMask);
