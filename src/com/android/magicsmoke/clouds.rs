@@ -120,8 +120,10 @@ do { \
 
 void update()
 {
-    rs_program_vertex pv = gPV5tex;
-    rs_program_fragment pf = gPF5tex;
+    rs_program_vertex pv = {0};
+    rsSetObject(&pv, gPV5tex);
+    rs_program_fragment pf = {0};
+    rsSetObject(&pf, gPF5tex);
 
     if (countTextures() == 4)
     {
@@ -170,6 +172,8 @@ void update()
             pos++;
         }
     }
+    rsClearObject(&pv);
+    rsClearObject(&pf);
 }
 
 void drawClouds() {
