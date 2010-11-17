@@ -31,7 +31,6 @@
 
 // State set from java
 float gXOffset;
-float gTilt;
 int   gPreset;
 int   gTextureMask;
 int   gRotate;
@@ -42,7 +41,6 @@ int   gLowCol;
 int   gHighCol;
 float gAlphaMul;
 int   gPreMul;
-int   gBlendFunc;
 
 typedef struct VertexShaderConstants_s {
     float4 layer0;
