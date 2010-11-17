@@ -127,8 +127,8 @@ void update()
 
     if (countTextures() == 4)
     {
-        pv = gPV4tex;
-        pf = gPF4tex;
+        rsSetObject(&pv, gPV4tex);
+        rsSetObject(&pf, gPF4tex);
     }
     rsgBindProgramFragment(pf);
     rsgBindProgramVertex(pv);
