@@ -99,7 +99,7 @@ static int currentpreset;
 static int lastuptime;
 static float timedelta;
 static float4 clearColor = {0.5f, 0.0f, 0.0f, 1.0f};
-int countTextures()
+static int countTextures()
 {
     int pos = 0;
     for (int i = 0; i < 5; i++)
@@ -116,7 +116,7 @@ do { \
     s.y = cos(__agl); \
 } while (0)
 
-void update()
+static void update()
 {
     rs_program_vertex pv;
     rsSetObject(&pv, gPV5tex);
@@ -172,7 +172,7 @@ void update()
     }
 }
 
-void drawClouds() {
+static void drawClouds() {
     if (gRotate != 0)
     {
         rotation[0] += 0.100f * timedelta;
@@ -225,7 +225,7 @@ void drawClouds() {
     }
 }
 
-int premul(int rgb, int a) {
+static int premul(int rgb, int a) {
     int r = (rgb >> 16) * a + 1;
     r = (r + (r >> 8)) >> 8;
     int g = ((rgb >> 8) & 0xff) * a + 1;
@@ -236,7 +236,7 @@ int premul(int rgb, int a) {
 }
 
 
-void makeTexture(int *src, int *dst, rs_allocation rsid) {
+static void makeTexture(int *src, int *dst, rs_allocation rsid) {
 
     int x;
     int y;
@@ -342,7 +342,7 @@ void makeTexture(int *src, int *dst, rs_allocation rsid) {
     rsgUploadToTexture(rsid, 0);
 }
 
-void makeTextures() {
+static void makeTextures() {
     alphafactor = 1.f;
     makeTexture((int*)gNoisesrc1, (int*)gNoisedst1, gTnoise1);
     makeTexture((int*)gNoisesrc2, (int*)gNoisedst2, gTnoise2);
