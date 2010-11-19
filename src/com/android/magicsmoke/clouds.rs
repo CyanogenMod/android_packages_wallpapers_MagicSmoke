@@ -88,8 +88,6 @@ int *gNoisedst3;
 int *gNoisedst4;
 int *gNoisedst5;
 
-#pragma rs_export_func()
-
 // Local script variables
 static float xshift[5];
 static float rotation[5];
