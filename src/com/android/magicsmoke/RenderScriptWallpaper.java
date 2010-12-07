@@ -79,7 +79,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
             if (mRs != null) {
-                mRs.contextSetSurface(width, height, holder.getSurface());
+                mRs.setSurface(holder, width, height);
             }
             if (mRenderer == null) {
                 mRenderer = createScene(width, height);
@@ -89,11 +89,6 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
                 mRenderer.resize(width, height);
             }
         }
-
-        /*@Override
-        public void onTouchEvent(MotionEvent event) {
-            mRenderer.onTouchEvent(event);
-        }*/
 
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset,
@@ -105,13 +100,9 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
 
-            Surface surface = null;
-            while (surface == null) {
-                surface = holder.getSurface();
-            }
             RenderScriptGL.SurfaceConfig sc = new RenderScriptGL.SurfaceConfig();
             mRs = new RenderScriptGL(sc);
-            mRs.contextSetPriority(RenderScript.Priority.LOW);
+            mRs.setPriority(RenderScript.Priority.LOW);
         }
 
         @Override

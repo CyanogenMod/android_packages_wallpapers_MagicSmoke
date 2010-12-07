@@ -264,7 +264,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         in.getPixels(pixels, 0, 256, 0, 0, 256, 256);
         mRealTextures[index] = Allocation.createTyped(mRS, mTextureType);
         mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType);
-        mSourceTextures[index].data(pixels);
+        mSourceTextures[index].copyFrom(pixels);
         in.recycle();
     }
 
@@ -305,7 +305,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     @Override
     protected ScriptC createScript() {
 
-        mScript = new ScriptC_clouds(mRS, mResources, R.raw.clouds, true);
+        mScript = new ScriptC_clouds(mRS, mResources, R.raw.clouds);
 
         mVSConst = new ScriptField_VertexShaderConstants_s(mRS, 1);
         mScript.bind_gVSConstants(mVSConst);
@@ -330,8 +330,8 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mRealTextures = new Allocation[5];
 
         Type.Builder tb = new Type.Builder(mRS, Element.RGBA_8888(mRS));
-        tb.add(Dimension.X, 256);
-        tb.add(Dimension.Y, 256);
+        tb.setX(256);
+        tb.setY(256);
         mTextureType = tb.create();
         loadBitmaps();
 
