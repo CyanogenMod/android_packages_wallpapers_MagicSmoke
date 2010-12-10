@@ -101,7 +101,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
             super.onSurfaceCreated(holder);
 
             RenderScriptGL.SurfaceConfig sc = new RenderScriptGL.SurfaceConfig();
-            mRs = new RenderScriptGL(sc);
+            mRs = new RenderScriptGL(RenderScriptWallpaper.this, sc);
             mRs.setPriority(RenderScript.Priority.LOW);
         }
 
