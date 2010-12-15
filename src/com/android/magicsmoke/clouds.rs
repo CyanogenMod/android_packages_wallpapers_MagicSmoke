@@ -337,7 +337,7 @@ static void makeTexture(int *src, int *dst, rs_allocation rsid) {
         }
     }
 
-    rsgUploadToTexture(rsid, 0);
+    rsgAllocationSyncAll(rsid);
 }
 
 static void makeTextures() {

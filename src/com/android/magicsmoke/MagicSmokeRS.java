@@ -262,8 +262,13 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
         int pixels[] = new int[65536];
         in.getPixels(pixels, 0, 256, 0, 0, 256, 256);
-        mRealTextures[index] = Allocation.createTyped(mRS, mTextureType);
-        mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType);
+        mRealTextures[index] = Allocation.createTyped(mRS, mTextureType,
+                                                      Allocation.MipmapControl.MIPMAP_NONE,
+                                                      Allocation.USAGE_SCRIPT |
+                                                      Allocation.USAGE_GRAPHICS_TEXTURE);
+        mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType,
+                                                      Allocation.MipmapControl.MIPMAP_NONE,
+                                                      Allocation.USAGE_SCRIPT);
         mSourceTextures[index].copyFrom(pixels);
         in.recycle();
     }
