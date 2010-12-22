@@ -29,17 +29,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.renderscript.Allocation;
-import android.renderscript.Dimension;
-import android.renderscript.Element;
-import android.renderscript.Mesh;
-import android.renderscript.Primitive;
-import android.renderscript.ProgramFragment;
-import android.renderscript.ProgramStore;
-import android.renderscript.ProgramVertex;
-import android.renderscript.Sampler;
-import android.renderscript.ScriptC;
-import android.renderscript.Type;
+import android.renderscript.Mesh.Primitive;
+import android.renderscript.*;
 import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
 import android.renderscript.ProgramStore.BlendSrcFunc;
@@ -82,7 +73,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     private ProgramVertex mPV5tex;
     private ProgramVertex mPV4tex;
-    private ProgramVertex.MatrixAllocation mPVAlloc;
+    private ProgramVertexFixedFunction.Constants mPVAlloc;
 
     private static final int RSID_STATE = 0;
     //private static final int RSID_PROGRAMVERTEX = 3;
@@ -199,7 +190,9 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     public void resize(int width, int height) {
         super.resize(width, height);
         if (mPVAlloc != null) {
-            mPVAlloc.setupProjectionNormalized(width, height);
+            Matrix4f proj = new Matrix4f();
+            proj.loadProjectionNormalized(width, height);
+            mPVAlloc.setProjection(proj);
         }
     }
 
@@ -316,7 +309,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mScript.bind_gVSConstants(mVSConst);
 
         {
-            ProgramVertex.ShaderBuilder builder = new ProgramVertex.ShaderBuilder(mRS);
+            ProgramVertex.Builder builder = new ProgramVertex.Builder(mRS);
             builder.setShader(mResources, R.raw.pv5tex);
             builder.addConstant(mVSConst.getAllocation().getType());
             builder.addInput(ScriptField_VertexInputs_s.createElement(mRS));
@@ -341,8 +334,8 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         loadBitmaps();
 
         Sampler.Builder samplerBuilder = new Sampler.Builder(mRS);
-        samplerBuilder.setMin(LINEAR);
-        samplerBuilder.setMag(LINEAR);
+        samplerBuilder.setMinification(LINEAR);
+        samplerBuilder.setMagnification(LINEAR);
         samplerBuilder.setWrapS(WRAP);
         samplerBuilder.setWrapT(WRAP);
         mSampler = new Sampler[5];
@@ -353,9 +346,11 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
             mFSConst = new ScriptField_FragmentShaderConstants_s(mRS, 1);
             mScript.bind_gFSConstants(mFSConst);
 
-            ProgramFragment.ShaderBuilder builder = new ProgramFragment.ShaderBuilder(mRS);
+            ProgramFragment.Builder builder = new ProgramFragment.Builder(mRS);
             builder.setShader(mResources, R.raw.pf5tex);
-            builder.setTextureCount(5);
+            for (int texCount = 0; texCount < 5; texCount ++) {
+                builder.addTexture(Program.TextureType.TEXTURE_2D);
+            }
             builder.addConstant(mFSConst.getAllocation().getType());
 
             mPF5tex = builder.create();
@@ -363,8 +358,12 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
                 mPF5tex.bindSampler(mSampler[i], i);
             mPF5tex.bindConstants(mFSConst.getAllocation(), 0);
 
+            builder = new ProgramFragment.Builder(mRS);
             builder.setShader(mResources, R.raw.pf4tex);
-            builder.setTextureCount(4);
+            for (int texCount = 0; texCount < 4; texCount ++) {
+                builder.addTexture(Program.TextureType.TEXTURE_2D);
+            }
+            builder.addConstant(mFSConst.getAllocation().getType());
             mPF4tex = builder.create();
             for (int i = 0; i < 4; i++)
                 mPF4tex.bindSampler(mSampler[i], i);
@@ -376,11 +375,11 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
 
         {
-            ProgramStore.Builder builder = new ProgramStore.Builder(mRS, null, null);
+            ProgramStore.Builder builder = new ProgramStore.Builder(mRS);
             builder.setDepthFunc(ProgramStore.DepthFunc.ALWAYS);
             builder.setBlendFunc(BlendSrcFunc.ONE, BlendDstFunc.ZERO);
-            builder.setDitherEnable(true); // without dithering there is severe banding
-            builder.setDepthMask(false);
+            builder.setDitherEnabled(true); // without dithering there is severe banding
+            builder.setDepthMaskEnabled(false);
             mPStore = builder.create();
         }
 
