@@ -253,6 +253,8 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap in = BitmapFactory.decodeResource(mResources, id, opts);
 
+        // Bitmaps are stored in memory in premultiplied form. We want non-premultiplied,
+        // which is what getPixels gives us.
         int pixels[] = new int[65536];
         in.getPixels(pixels, 0, 256, 0, 0, 256, 256);
         mRealTextures[index] = Allocation.createTyped(mRS, mTextureType,
@@ -262,7 +264,16 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType,
                                                       Allocation.MipmapControl.MIPMAP_NONE,
                                                       Allocation.USAGE_SCRIPT);
-        mSourceTextures[index].copyFrom(pixels);
+
+        // copyFrom needs a byte[], not an int[], so we need to copy the data first
+        byte bpixels[] = new byte[65536*4];
+        for (int i = 0; i < 65536; i++) {
+            bpixels[i * 4 + 0] = (byte)(pixels[i] & 0xff);
+            bpixels[i * 4 + 1] = (byte)((pixels[i] >> 8) & 0xff);
+            bpixels[i * 4 + 2] = (byte)((pixels[i] >>16) & 0xff);
+            bpixels[i * 4 + 3] = (byte)((pixels[i] >> 24) & 0xff);
+        }
+        mSourceTextures[index].copyFrom(bpixels);
         in.recycle();
     }
 
