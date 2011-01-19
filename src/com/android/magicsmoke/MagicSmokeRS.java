@@ -44,6 +44,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     static class WorldState {
         public float mXOffset;
+        public float mYOffset;
         public int   mPreset;
         public int   mTextureMask;
         public int   mRotate;
@@ -226,10 +227,12 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     }*/
 
     @Override
-    public void setOffset(float xOffset, float yOffset, int xPixels, int yPixels) {
+    public void setOffset(float xOffset, float yOffset, float xStep, float yStep, int xPixels, int yPixels) {
         // update our state, then push it to the renderscript
         mWorldState.mXOffset = xOffset;
+        mWorldState.mYOffset = yOffset;
         mScript.set_gXOffset(mWorldState.mXOffset);
+        mScript.set_gYOffset(mWorldState.mYOffset);
     }
 
     @Override

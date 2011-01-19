@@ -31,6 +31,7 @@
 
 // State set from java
 float gXOffset;
+float gYOffset;
 int   gPreset;
 int   gTextureMask;
 int   gRotate;
@@ -48,6 +49,7 @@ typedef struct VertexShaderConstants_s {
     float4 layer2;
     float4 layer3;
     float4 layer4;
+    float2 panoffset;
 } VertexShaderConstants;
 VertexShaderConstants *gVSConstants;
 
@@ -136,11 +138,11 @@ static void update()
     rotate(gVSConstants->layer3, rotation[3]);
     rotate(gVSConstants->layer4, rotation[4]);
 
-    gVSConstants->layer0.w = -gXOffset *  0 + xshift[0];
-    gVSConstants->layer1.w = -gXOffset *  8 + xshift[1];
-    gVSConstants->layer2.w = -gXOffset * 16 + xshift[2];
-    gVSConstants->layer3.w = -gXOffset * 24 + xshift[3];
-    gVSConstants->layer4.w = -gXOffset * 32 + xshift[4];
+    gVSConstants->layer0.w = xshift[0];
+    gVSConstants->layer1.w = xshift[1];
+    gVSConstants->layer2.w = xshift[2];
+    gVSConstants->layer3.w = xshift[3];
+    gVSConstants->layer4.w = xshift[4];
 
     float m = 0.35f;
     gVSConstants->layer0.z = m * scale[0];
@@ -148,6 +150,9 @@ static void update()
     gVSConstants->layer2.z = m * scale[2];
     gVSConstants->layer3.z = m * scale[3];
     gVSConstants->layer4.z = m * scale[4];
+
+    gVSConstants->panoffset.x = gXOffset;
+    gVSConstants->panoffset.y = -gYOffset;
 
     gFSConstants->clearColor = clearColor;
 
