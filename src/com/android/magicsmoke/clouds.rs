@@ -372,7 +372,7 @@ void init() {
 }
 
 
-int root(int launchID) {
+int root(void) {
     int i;
 
     int now = (int)rsUptimeMillis();
