@@ -119,14 +119,14 @@ do { \
 static void update()
 {
     rs_program_vertex pv;
-    rsSetObject(&pv, gPV5tex);
+    pv = gPV5tex;
     rs_program_fragment pf;
-    rsSetObject(&pf, gPF5tex);
+    pf = gPF5tex;
 
     if (countTextures() == 4)
     {
-        rsSetObject(&pv, gPV4tex);
-        rsSetObject(&pf, gPF4tex);
+        pv = gPV4tex;
+        pf = gPF4tex;
     }
     rsgBindProgramFragment(pf);
     rsgBindProgramVertex(pv);
