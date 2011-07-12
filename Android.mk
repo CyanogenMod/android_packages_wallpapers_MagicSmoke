@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-ifneq ($(TARGET_SIMULATOR),true)
-
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -29,5 +27,3 @@ LOCAL_CERTIFICATE := shared
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
 include $(BUILD_PACKAGE)
-
-endif
