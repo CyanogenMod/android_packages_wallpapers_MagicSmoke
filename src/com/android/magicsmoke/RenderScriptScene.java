@@ -27,6 +27,7 @@ public abstract class RenderScriptScene {
     protected int mWidth;
     protected int mHeight;
     protected boolean mPreview;
+    protected boolean mIsStarted;
     protected Resources mResources;
     protected RenderScriptGL mRS;
     protected ScriptC mScript;
@@ -69,12 +70,14 @@ public abstract class RenderScriptScene {
 
     protected abstract ScriptC createScript();
 
-    public void stop() {
+    public void stop(boolean forReal) {
         mRS.bindRootScript(null);
+        mIsStarted = false;
     }
 
     public void start() {
         mRS.bindRootScript(mScript);
+        mIsStarted = true;
     }
 
     public void resize(int width, int height) {

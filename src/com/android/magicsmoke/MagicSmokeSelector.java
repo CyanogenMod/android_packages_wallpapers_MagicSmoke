@@ -73,12 +73,6 @@ public class MagicSmokeSelector extends Activity {
         }
     }
     
-    // button hook
-    public void setLiveWallpaper(View v) {
-        finish();
-    }
-
-
     @Override
     public void onResume() {
         super.onResume();

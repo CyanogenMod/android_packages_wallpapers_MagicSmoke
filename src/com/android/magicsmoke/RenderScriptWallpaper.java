@@ -54,7 +54,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
 
         private void destroyRenderer() {
             if (mRenderer != null) {
-                mRenderer.stop();
+                mRenderer.stop(true);
                 mRenderer = null;
             }
             if (mRs != null) {
@@ -70,7 +70,7 @@ public abstract class RenderScriptWallpaper<T extends RenderScriptScene> extends
                 if (visible) {
                     mRenderer.start();
                 } else {
-                    mRenderer.stop();
+                    mRenderer.stop(false);
                 }
             }
         }

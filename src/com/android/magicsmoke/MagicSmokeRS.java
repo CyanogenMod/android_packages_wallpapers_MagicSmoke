@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.renderscript.Mesh.Primitive;
 import android.renderscript.*;
 import android.renderscript.Element.Builder;
 import android.renderscript.ProgramStore.BlendDstFunc;
@@ -116,7 +115,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         public boolean mPreMul;
     }
 
-    public static final int DEFAULT_PRESET = 4;
+    public static final int DEFAULT_PRESET = 16;
     public static final Preset [] mPreset = new Preset[] {
         //       proc    back     low       high     alph  mask  rot    swap   premul
         new Preset(1,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  false, false),
@@ -149,12 +148,19 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         mHeight = height;
         mContext = context;
         mSharedPref = mContext.getSharedPreferences("magicsmoke", Context.MODE_PRIVATE);
+        mSharedPref.registerOnSharedPreferenceChangeListener(this);
         makeNewState();
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        makeNewState();
+        if (!mIsStarted) {
+            start();
+            mRS.finish();
+            stop(false);
+        } else {
+            makeNewState();
+        }
     }
 
     void makeNewState() {
@@ -236,16 +242,17 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     }
 
     @Override
-    public void stop() {
-        mSharedPref.unregisterOnSharedPreferenceChangeListener(this);
-        super.stop();
+    public void stop(boolean forReal) {
+        if (forReal) {
+            mSharedPref.unregisterOnSharedPreferenceChangeListener(this);
+        }
+        super.stop(forReal);
     }
 
     @Override
     public void start() {
-        super.start();
-        mSharedPref.registerOnSharedPreferenceChangeListener(this);
         makeNewState();
+        super.start();
     }
 
     float alphafactor;

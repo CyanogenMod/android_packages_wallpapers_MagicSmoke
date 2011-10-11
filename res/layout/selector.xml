@@ -31,13 +31,4 @@
         android:background="#40000000"
     />
 
-    <Button
-        android:layout_width="160dip"
-        android:layout_height="wrap_content"
-        android:text="@string/ok"
-        android:onClick="setLiveWallpaper"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-    />
-
 </RelativeLayout>
