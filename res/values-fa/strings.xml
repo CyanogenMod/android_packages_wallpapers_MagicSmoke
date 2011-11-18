@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
 * Copyright (C) 2008 The Android Open Source Project
 *
@@ -22,7 +22,6 @@
     <string name="wallpapers" msgid="9040514152147134380">"تصاویر زمینه دودی جادویی"</string>
     <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"دودی جادویی"</string>
     <string name="author" msgid="3728706901510651795">"Google"</string>
-    <string name="magicsmoke_desc" msgid="4882321171007683983">"دود، ابر، آب و پلاسما را می کشد."</string>
     <string name="ok" msgid="2096612745586722488">"تأیید"</string>
     <string name="taptochange" msgid="2128130912969723119">"ضربه برای تغییر"</string>
 </resources>
