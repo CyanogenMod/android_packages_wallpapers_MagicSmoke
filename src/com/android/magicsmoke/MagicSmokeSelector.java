@@ -222,5 +222,8 @@ public class MagicSmokeSelector extends Activity {
         public ParcelFileDescriptor setWallpaper(String name) {
             return null;
         }
+
+        public void engineShown(IWallpaperEngine engine) throws RemoteException {
+        }
     }
 }
