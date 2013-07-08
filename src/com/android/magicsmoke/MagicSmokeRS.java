@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2009 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.magicsmoke;
 
@@ -53,17 +53,17 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
     static class WorldState {
         public float mXOffset;
         public float mTilt;
-        public int   mPreset;
-        public int   mTextureMask;
-        public int   mRotate;
-        public int   mTextureSwap;
-        public int   mProcessTextureMode;
-        public int   mBackCol;
-        public int   mLowCol;
-        public int   mHighCol;
+        public int mPreset;
+        public int mTextureMask;
+        public int mRotate;
+        public int mTextureSwap;
+        public int mProcessTextureMode;
+        public int mBackCol;
+        public int mLowCol;
+        public int mHighCol;
         public float mAlphaMul;
-        public int   mPreMul;
-        public int   mBlendFunc;
+        public int mPreMul;
+        public int mBlendFunc;
     }
     WorldState mWorldState = new WorldState();
     private Type mStateType;
@@ -123,27 +123,27 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
 
     public static final int DEFAULT_PRESET = 4;
     public static final Preset [] mPreset = new Preset[] {
-        //       proc    back     low       high     alph  mask  rot  blend  swap premul
-        new Preset(1,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(1,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(1,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(1,  0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(1,  0x00ff00, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
-        new Preset(1,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
-        new Preset(0,  0x000000, 0x000000, 0xffffff, 0.0f, 0x1f, true,  0, false, false),
-        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true,  false),
-        new Preset(1,  0x008000, 0x00ff00, 0xffffff, 2.5f, 0x1f, true,  0, true,  false),
-        new Preset(1,  0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true,  0, true, true),
-        new Preset(1,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(1,  0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, true),
-        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, false, 0, false, true),
-        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true,  0, true, true),
-        new Preset(1,  0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, true,  0, true, true),
-        new Preset(1,  0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, false, false),
-        new Preset(1,  0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
-        new Preset(2,  0x000000, 0x000070, 0xff2020, 2.5f, 0x1f, true,  0, false, false),
-        new Preset(2,  0x6060ff, 0x000070, 0xffffff, 2.5f, 0x1f, true,  0, false, false),
-        new Preset(3,  0x0000f0, 0x000000, 0xffffff, 2.0f, 0x0f, true,  0, true, false),
+        // proc back low high alph mask rot blend swap premul
+        new Preset(1, 0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, false),
+        new Preset(1, 0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, false),
+        new Preset(1, 0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, false),
+        new Preset(1, 0x00ff00, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, true),
+        new Preset(1, 0x00ff00, 0x00ff00, 0xffffff, 2.5f, 0x1f, true, 0, true, true),
+        new Preset(1, 0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true, 0, true, false),
+        new Preset(0, 0x000000, 0x000000, 0xffffff, 0.0f, 0x1f, true, 0, false, false),
+        new Preset(1, 0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true, 0, true, false),
+        new Preset(1, 0x008000, 0x00ff00, 0xffffff, 2.5f, 0x1f, true, 0, true, false),
+        new Preset(1, 0x800000, 0xff0000, 0xffffff, 2.5f, 0x1f, true, 0, true, true),
+        new Preset(1, 0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, true),
+        new Preset(1, 0x0000ff, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, true),
+        new Preset(1, 0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, false, 0, false, true),
+        new Preset(1, 0x0000ff, 0x00ff00, 0xffff00, 2.0f, 0x1f, true, 0, true, true),
+        new Preset(1, 0x0000ff, 0x00ff00, 0xffff00, 1.5f, 0x1f, true, 0, true, true),
+        new Preset(1, 0x808080, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, false, false),
+        new Preset(1, 0x000000, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, true, false),
+        new Preset(2, 0x000000, 0x000070, 0xff2020, 2.5f, 0x1f, true, 0, false, false),
+        new Preset(2, 0x6060ff, 0x000070, 0xffffff, 2.5f, 0x1f, true, 0, false, false),
+        new Preset(3, 0x0000f0, 0x000000, 0xffffff, 2.0f, 0x0f, true, 0, true, false),
     };
 
     private float mTouchY;
@@ -242,7 +242,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         Bitmap in = BitmapFactory.decodeResource(mResources, id, opts);
 
         int pixels[] = new int[65536];
-        in.getPixels(pixels, 0, 256, 0, 0, 256, 256);
+        in.getPixels(pixels, 0, 256, 0, 0, 110, 110);
         mRealTextures[index] = Allocation.createTyped(mRS, mTextureType);
         mSourceTextures[index] = Allocation.createTyped(mRS, mTextureType);
         mSourceTextures[index].setName(name+"_src");
@@ -257,7 +257,7 @@ class MagicSmokeRS extends RenderScriptScene implements OnSharedPreferenceChange
         int lowcol = mPreset[mWorldState.mPreset].mLowColor;
         int highcol = mPreset[mWorldState.mPreset].mHighColor;
         //Log.i("@@@@", "preset " + mWorldState.mPreset + ", mul: " + alphamul +
-        //        ", colors: " + Integer.toHexString(lowcol) + "/" + Integer.toHexString(highcol));
+        // ", colors: " + Integer.toHexString(lowcol) + "/" + Integer.toHexString(highcol));
 
         // TODO: using different high and low colors for each layer offers some cool effects too
         loadBitmap(R.drawable.noise1, 0, "Tnoise1", alphamul, lowcol, highcol);
