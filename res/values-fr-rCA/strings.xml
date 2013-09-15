@@ -19,9 +19,9 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="wallpapers" msgid="9040514152147134380">"Magic Smoke Wallpapers"</string>
-    <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"जादुई धुंआ"</string>
+    <string name="wallpapers" msgid="9040514152147134380">"Fonds d\'écran fumée magique"</string>
+    <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"Fumée magique"</string>
     <string name="author" msgid="3728706901510651795">"Google"</string>
-    <string name="ok" msgid="2096612745586722488">"ठीक है"</string>
-    <string name="taptochange" msgid="2128130912969723119">"बदलने के लिए टैप करें"</string>
+    <string name="ok" msgid="2096612745586722488">"OK"</string>
+    <string name="taptochange" msgid="2128130912969723119">"Appuyer pour modifier la sélection"</string>
 </resources>
