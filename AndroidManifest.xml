@@ -25,9 +25,6 @@
 
     <uses-feature android:name="android.software.live_wallpaper" />
 
-    <uses-permission android:name="android.permission.SET_WALLPAPER_COMPONENT" />
-    <uses-permission android:name="android.permission.BIND_WALLPAPER" />
-
     <application
         android:label="@string/wallpapers"
         android:icon="@drawable/ic_launcher_wallpaper">
