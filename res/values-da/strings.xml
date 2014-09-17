@@ -19,7 +19,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="wallpapers" msgid="9040514152147134380">"Tapeter med magisk røg"</string>
+    <string name="wallpapers" msgid="9040514152147134380">"Baggrunde med magisk røg"</string>
     <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"Magisk røg"</string>
     <string name="author" msgid="3728706901510651795">"Google"</string>
     <string name="ok" msgid="2096612745586722488">"OK"</string>
