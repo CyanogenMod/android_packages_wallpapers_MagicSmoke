@@ -27,7 +27,7 @@
 
     <application
         android:label="@string/wallpapers"
-        android:icon="@drawable/ic_launcher_wallpaper">
+        android:icon="@mipmap/ic_launcher_wallpaper">
 
         <service
             android:label="@string/wallpaper_magicsmoke"
