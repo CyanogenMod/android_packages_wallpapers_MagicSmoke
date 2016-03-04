@@ -20,12 +20,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <!-- General -->
   <!-- Application name -->
-  <string name="wallpapers">Fondos de pantalla de fumu máxicu</string>
   <!-- Wallpapers showing smoke, clouds, water, plasmas -->
-  <string name="wallpaper_magicsmoke">Fumu Máxicu</string>
-  <string name="author">Google</string>
   <!-- button label -->
-  <string name="ok">Aceutar</string>
   <!-- overlay text -->
-  <string name="taptochange">Toca pa camudar</string>
 </resources>
