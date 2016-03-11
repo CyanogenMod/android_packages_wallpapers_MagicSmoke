@@ -21,7 +21,7 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="wallpapers" msgid="9040514152147134380">"जादु धुवाँ वालपेपर"</string>
     <string name="wallpaper_magicsmoke" msgid="1982855461335812678">"जादुको धुवाँ"</string>
-    <string name="author" msgid="3728706901510651795">"Google"</string>
+    <string name="author" msgid="3728706901510651795">"गुगल"</string>
     <string name="ok" msgid="2096612745586722488">"ठिक छ"</string>
     <string name="taptochange" msgid="2128130912969723119">"बदल्नको लागि हनाइ‍"</string>
 </resources>
