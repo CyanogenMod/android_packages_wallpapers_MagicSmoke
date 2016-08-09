@@ -25,6 +25,7 @@
   <string name="wallpaper_magicsmoke">سىھىرلىك تۇمان</string>
   <string name="author">Google</string>
   <!-- button label -->
+  <string name="ok">جەزملەڭ</string>
   <!-- overlay text -->
   <string name="taptochange">چېكىلسە ئۆزگىرىدۇ</string>
 </resources>
