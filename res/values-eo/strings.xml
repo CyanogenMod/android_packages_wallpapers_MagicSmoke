@@ -21,6 +21,7 @@
   <!-- General -->
   <!-- Application name -->
   <!-- Wallpapers showing smoke, clouds, water, plasmas -->
+  <string name="author">Google</string>
   <!-- button label -->
   <!-- overlay text -->
 </resources>
