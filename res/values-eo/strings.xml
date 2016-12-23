@@ -19,6 +19,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <!-- General -->
+  <skip></skip>
   <!-- Application name -->
   <!-- Wallpapers showing smoke, clouds, water, plasmas -->
   <string name="author">Google</string>

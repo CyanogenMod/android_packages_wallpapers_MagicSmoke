@@ -19,6 +19,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <!-- General -->
+  <skip></skip>
   <!-- Application name -->
   <string name="wallpapers">Hannergrondbiller mat mageschem Damp</string>
   <!-- Wallpapers showing smoke, clouds, water, plasmas -->
